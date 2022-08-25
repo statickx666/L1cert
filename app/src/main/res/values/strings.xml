@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">L1cert</string>
+    <string name="requestString">Tap the green square to begin</string>
 </resources>

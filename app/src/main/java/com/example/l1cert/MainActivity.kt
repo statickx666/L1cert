@@ -16,6 +16,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -33,9 +34,15 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
     var pickedPhoto : Uri? = null
     var pickedBitMap : Bitmap? = null
+    //var placeholderText : TextView? = null
+    var Response : TextView? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        Response = findViewById(R.id.requestView)
 
         //Back button on label
         val display = supportActionBar
@@ -50,20 +57,15 @@ class MainActivity : AppCompatActivity() {
         val imgButton = findViewById(R.id.loadImg) as Button
         imgButton.setOnClickListener{
             pickedPhoto?.let { LoadImg(it) }
-        }
-    }
 
-    fun getImageUri(inContext: Context, inImage: Bitmap): Uri? {
-        val bytes = ByteArrayOutputStream()
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = Images.Media.insertImage(inContext.contentResolver, inImage, "Title", null)
-        return Uri.parse(path)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             android.R.id.home ->{
                 finish()
+                logout()
                 true
             }
             else ->super.onOptionsItemSelected(item)
@@ -78,6 +80,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             val galeriIntext = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(galeriIntext,2)
+            Response?.text = "Now press Process Image"
         }
     }
 
@@ -147,6 +150,8 @@ class MainActivity : AppCompatActivity() {
         request.add("features", features)
 
         //val request = jsonReq(base64encoded)
+        var data = ""
+        var position = ""
 
         annotateImage(request.toString())
             .addOnCompleteListener { task ->
@@ -166,8 +171,11 @@ class MainActivity : AppCompatActivity() {
                         for(loc in labelObj["locations"].asJsonArray) {
                             val latitude = loc.asJsonObject["latLng"].asJsonObject["latitude"]
                             val longitude = loc.asJsonObject["latLng"].asJsonObject["longitude"]
+                            position += "Lat: " + latitude.toString() + "\n Long: " + longitude.toString() + "\n"
                         }
+                        data += "Landmark: " + landmarkName.toString() + "\n Score: " + score.toString() + "\n" + position
                     }
+                    Response?.text = data
                 }
             }
     }
