@@ -49,11 +49,6 @@ class MainActivity : AppCompatActivity() {
         display?.title = "Landmark Recognition"
         display?.setDisplayHomeAsUpEnabled(true)
 
-        val logout = findViewById(R.id.LogOut) as Button
-        logout.setOnClickListener{
-            Toast.makeText(this@MainActivity, "Logged out", Toast.LENGTH_SHORT).show()
-            logout()
-        }
         val imgButton = findViewById(R.id.loadImg) as Button
         imgButton.setOnClickListener{
             pickedPhoto?.let { LoadImg(it) }
